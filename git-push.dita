@@ -35,7 +35,7 @@
     the upstream branch does not have the same name as the local one.</p></section>
   <section><b>OPTIONS</b><dl>
     <dlentry>
-     <dt id="Documentation/git-push.txt-ltrepositorygt">&lt;repository></dt>
+     <dt>&lt;repository></dt>
      <dd>
       <p>The "remote" repository that is destination of a push operation. This parameter can be
        either a URL (see the section <xref href="https://git-scm.com/docs/git-push#URLS"
@@ -45,7 +45,7 @@
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt-ltrefspecgt82308203">&lt;refspec>…​</dt>
+     <dt>&lt;refspec>…​</dt>
      <dd>
       <p>Specify what destination ref to update with what source object. The format of a
        &lt;refspec> parameter is an optional plus <codeblock>+</codeblock>, followed by the source
@@ -135,14 +135,14 @@
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---all">--all</dt>
+     <dt>--all</dt>
      <dd>
       <p>Push all branches (i.e. refs under <codeblock>refs/heads/</codeblock>); cannot be used with
        other &lt;refspec>.</p>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---prune">--prune</dt>
+     <dt>--prune</dt>
      <dd>
       <p>Remove remote branches that don’t have a local counterpart. For example a remote branch
        <codeblock>tmp</codeblock> will be removed if a local branch with the same name doesn’t exist
@@ -153,7 +153,7 @@
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---mirror">--mirror</dt>
+     <dt>--mirror</dt>
      <dd>
       <p>Instead of naming each ref to push, specifies that all refs under
        <codeblock>refs/</codeblock> (which includes but is not limited to
@@ -165,40 +165,42 @@
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt--n">-n</dt>
+     <dt>-n</dt>
+     <dd/>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---dry-run">--dry-run</dt>
+     <dt>--dry-run</dt>
      <dd>
       <p>Do everything except actually send the updates.</p>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---porcelain">--porcelain</dt>
+     <dt>--porcelain</dt>
      <dd>
       <p>Produce machine-readable output. The output status line for each ref will be tab-separated
        and sent to stdout instead of stderr. The full symbolic names of the refs will be given.</p>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt--d">-d</dt>
+     <dt>-d</dt>
+     <dd/>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---delete">--delete</dt>
+     <dt>--delete</dt>
      <dd>
       <p>All listed refs are deleted from the remote repository. This is the same as prefixing all
        refs with a colon.</p>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---tags">--tags</dt>
+     <dt>--tags</dt>
      <dd>
       <p>All refs under <codeblock>refs/tags</codeblock> are pushed, in addition to refspecs
        explicitly listed on the command line.</p>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---follow-tags">--follow-tags</dt>
+     <dt>--follow-tags</dt>
      <dd>
       <p>Push all the refs that would be pushed without this option, and also push annotated tags in
        <codeblock>refs/tags</codeblock> that are missing from the remote but are pointing at
@@ -209,11 +211,11 @@
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---no-signed">--[no-]signed</dt>
+     <dt>--[no-]signed</dt>
+     <dd/>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---signedtruefalseif-asked"
-      >--signed=(true|false|if-asked)</dt>
+     <dt>--signed=(true|false|if-asked)</dt>
      <dd>
       <p>GPG-sign the push request to update refs on the receiving side, to allow it to be checked
        by the hooks and/or be logged. If <codeblock>false</codeblock> or
@@ -235,10 +237,11 @@
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt--oltoptiongt">-o &lt;option></dt>
+     <dt>-o &lt;option></dt>
+     <dd/>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---push-optionltoptiongt">--push-option=&lt;option></dt>
+     <dt>--push-option=&lt;option></dt>
      <dd>
       <p>Transmit the given string to the server, which passes them to the pre-receive as well as
        the post-receive hook. The given string must not contain a NUL or LF character. When multiple
@@ -249,12 +252,11 @@
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---receive-packltgit-receive-packgt"
-      >--receive-pack=&lt;git-receive-pack></dt>
+     <dt>--receive-pack=&lt;git-receive-pack></dt>
+     <dd/>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---execltgit-receive-packgt"
-      >--exec=&lt;git-receive-pack></dt>
+     <dt>--exec=&lt;git-receive-pack></dt>
      <dd>
       <p>Path to the <i>git-receive-pack</i> program on the remote end. Sometimes useful when
        pushing to a remote repository over ssh, and you do not have the program in a directory on
@@ -262,15 +264,13 @@
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---no-force-with-lease">--[no-]force-with-lease</dt>
+     <dt>--[no-]force-with-lease</dt>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---force-with-leaseltrefnamegt"
-      >--force-with-lease=&lt;refname></dt>
+     <dt>--force-with-lease=&lt;refname></dt>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---force-with-leaseltrefnamegtltexpectgt"
-      >--force-with-lease=&lt;refname>:&lt;expect></dt>
+     <dt>--force-with-lease=&lt;refname>:&lt;expect></dt>
      <dd>
       <p>Usually, "git push" refuses to update a remote ref that is not an ancestor of the local ref
        used to overwrite it.</p>
@@ -336,10 +336,11 @@ git push --force-with-lease=master:base master:master</pre>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt--f">-f</dt>
+     <dt>-f</dt>
+     <dd/>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---force">--force</dt>
+     <dt>--force</dt>
      <dd>
       <p>Usually, the command refuses to update a remote ref that is not an ancestor of the local
        ref used to overwrite it. Also, when <codeblock>--force-with-lease</codeblock> option is
@@ -358,17 +359,17 @@ git push --force-with-lease=master:base master:master</pre>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---repoltrepositorygt">--repo=&lt;repository></dt>
+     <dt>--repo=&lt;repository></dt>
      <dd>
       <p>This option is equivalent to the &lt;repository> argument. If both are specified, the
        command-line argument takes precedence.</p>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt--u">-u</dt>
+     <dt>-u</dt>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---set-upstream">--set-upstream</dt>
+     <dt>--set-upstream</dt>
      <dd>
       <p>For every branch that is up to date or successfully pushed, add upstream (tracking)
        reference, used by argument-less <xref href="https://git-scm.com/docs/git-pull" format="html"
@@ -379,7 +380,7 @@ git push --force-with-lease=master:base master:master</pre>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---no-thin">--[no-]thin</dt>
+     <dt>--[no-]thin</dt>
      <dd>
       <p>These options are passed to <xref href="https://git-scm.com/docs/git-send-pack"
         format="html" scope="external">git-send-pack[1]</xref>. A thin transfer significantly
@@ -388,26 +389,26 @@ git push --force-with-lease=master:base master:master</pre>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt--q">-q</dt>
+     <dt>-q</dt>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---quiet">--quiet</dt>
+     <dt>--quiet</dt>
      <dd>
       <p>Suppress all output, including the listing of updated refs, unless an error occurs.
        Progress is not reported to the standard error stream.</p>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt--v">-v</dt>
+     <dt>-v</dt>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---verbose">--verbose</dt>
+     <dt>--verbose</dt>
      <dd>
       <p>Run verbosely.</p>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---progress">--progress</dt>
+     <dt>--progress</dt>
      <dd>
       <p>Progress status is reported on the standard error stream by default when it is attached to
        a terminal, unless -q is specified. This flag forces progress status even if the standard
@@ -415,11 +416,10 @@ git push --force-with-lease=master:base master:master</pre>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---no-recurse-submodules">--no-recurse-submodules</dt>
+     <dt>--no-recurse-submodules</dt>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---recurse-submodulescheckon-demandonlyno"
-      >--recurse-submodules=check|on-demand|only|no</dt>
+     <dt>--recurse-submodules=check|on-demand|only|no</dt>
      <dd>
       <p>May be used to make sure all submodule commits used by the revisions to be pushed are
        available on a remote-tracking branch. If <i>check</i> is used Git will verify that all
@@ -434,7 +434,7 @@ git push --force-with-lease=master:base master:master</pre>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---no-verify">--[no-]verify</dt>
+     <dt>--[no-]verify</dt>
      <dd>
       <p>Toggle the pre-push hook (see <xref href="https://git-scm.com/docs/githooks" format="html"
         scope="external">githooks[5]</xref>). The default is --verify, giving the hook a chance to
@@ -442,19 +442,19 @@ git push --force-with-lease=master:base master:master</pre>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt--4">-4</dt>
+     <dt>-4</dt>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---ipv4">--ipv4</dt>
+     <dt>--ipv4</dt>
      <dd>
       <p>Use IPv4 addresses only, ignoring IPv6 addresses.</p>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt--6">-6</dt>
+     <dt>-6</dt>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt---ipv6">--ipv6</dt>
+     <dt>--ipv6</dt>
      <dd>
       <p>Use IPv6 addresses only, ignoring IPv4 addresses.</p>
      </dd>
@@ -597,18 +597,18 @@ git push --force-with-lease=master:base master:master</pre>
     form:</p><pre> &lt;flag> \t &lt;from>:&lt;to> \t &lt;summary> (&lt;reason>)</pre><p>The status
     of up-to-date refs is shown only if --porcelain or --verbose option is used.</p><dl>
     <dlentry>
-     <dt id="Documentation/git-push.txt-flag">flag</dt>
+     <dt>flag</dt>
      <dd>
       <p>A single character indicating the status of the ref:</p>
       <dl>
        <dlentry>
-        <dt id="Documentation/git-push.txt-space">(space)</dt>
+        <dt>(space)</dt>
         <dd>
          <p>for a successfully pushed fast-forward;</p>
         </dd>
        </dlentry>
        <dlentry>
-        <dt id="Documentation/git-push.txt-codecode">
+        <dt>
          <codeblock>+</codeblock>
         </dt>
         <dd>
@@ -616,7 +616,7 @@ git push --force-with-lease=master:base master:master</pre>
         </dd>
        </dlentry>
        <dlentry>
-        <dt id="Documentation/git-push.txt-code-code">
+        <dt>
          <codeblock>-</codeblock>
         </dt>
         <dd>
@@ -624,7 +624,7 @@ git push --force-with-lease=master:base master:master</pre>
         </dd>
        </dlentry>
        <dlentry>
-        <dt id="Documentation/git-push.txt-codecode">
+        <dt>
          <codeblock>*</codeblock>
         </dt>
         <dd>
@@ -632,7 +632,7 @@ git push --force-with-lease=master:base master:master</pre>
         </dd>
        </dlentry>
        <dlentry>
-        <dt id="Documentation/git-push.txt-codecode">
+        <dt>
          <codeblock>!</codeblock>
         </dt>
         <dd>
@@ -640,7 +640,7 @@ git push --force-with-lease=master:base master:master</pre>
         </dd>
        </dlentry>
        <dlentry>
-        <dt id="Documentation/git-push.txt-codecode">
+        <dt>
          <codeblock>=</codeblock>
         </dt>
         <dd>
@@ -651,7 +651,7 @@ git push --force-with-lease=master:base master:master</pre>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt-summary">summary</dt>
+     <dt>summary</dt>
      <dd>
       <p>For a successfully pushed ref, the summary shows the old and new values of the ref in a
        form suitable for using as an argument to <codeblock>git log</codeblock> (this is
@@ -660,14 +660,14 @@ git push --force-with-lease=master:base master:master</pre>
       <p>For a failed update, more details are given:</p>
       <dl>
        <dlentry>
-        <dt id="Documentation/git-push.txt-rejected">rejected</dt>
+        <dt>rejected</dt>
         <dd>
          <p>Git did not try to send the ref at all, typically because it is not a fast-forward and
           you did not force the update.</p>
         </dd>
        </dlentry>
        <dlentry>
-        <dt id="Documentation/git-push.txt-remoterejected">remote rejected</dt>
+        <dt>remote rejected</dt>
         <dd>
          <p>The remote end refused the update. Usually caused by a hook on the remote side, or
           because the remote repository has one of the following safety options in effect:
@@ -680,7 +680,7 @@ git push --force-with-lease=master:base master:master</pre>
         </dd>
        </dlentry>
        <dlentry>
-        <dt id="Documentation/git-push.txt-remotefailure">remote failure</dt>
+        <dt>remote failure</dt>
         <dd>
          <p>The remote end did not report the successful update of the ref, perhaps because of a
           temporary error on the remote side, a break in the network connection, or other transient
@@ -691,21 +691,21 @@ git push --force-with-lease=master:base master:master</pre>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt-from">from</dt>
+     <dt>from</dt>
      <dd>
       <p>The name of the local ref being pushed, minus its <codeblock>refs/&lt;type>/</codeblock>
        prefix. In the case of deletion, the name of the local ref is omitted.</p>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt-to">to</dt>
+     <dt>to</dt>
      <dd>
       <p>The name of the remote ref being updated, minus its <codeblock>refs/&lt;type>/</codeblock>
        prefix.</p>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt-reason">reason</dt>
+     <dt>reason</dt>
      <dd>
       <p>A human-readable explanation. In the case of successfully pushed refs, no explanation is
        needed. For a failed ref, the reason for failure is described.</p>
@@ -753,7 +753,7 @@ git push --force-with-lease=master:base master:master</pre>
     push --force" is a method reserved for a case where you do mean to lose history.</p></section>
   <section><b>EXAMPLES</b><dl>
     <dlentry>
-     <dt id="Documentation/git-push.txt-codegitpushcode">
+     <dt>
       <codeblock>git push</codeblock>
      </dt>
      <dd>
@@ -763,7 +763,7 @@ git push --force-with-lease=master:base master:master</pre>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt-codegitpushorigincode">
+     <dt>
       <codeblock>git push origin</codeblock>
      </dt>
      <dd>
@@ -780,7 +780,7 @@ git push --force-with-lease=master:base master:master</pre>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt-codegitpushorigincode">
+     <dt>
       <codeblock>git push origin :</codeblock>
      </dt>
      <dd>
@@ -790,7 +790,7 @@ git push --force-with-lease=master:base master:master</pre>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt-codegitpushoriginmastercode">
+     <dt>
       <codeblock>git push origin master</codeblock>
      </dt>
      <dd>
@@ -801,7 +801,7 @@ git push --force-with-lease=master:base master:master</pre>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt-codegitpushoriginHEADcode">
+     <dt>
       <codeblock>git push origin HEAD</codeblock>
      </dt>
      <dd>
@@ -809,8 +809,7 @@ git push --force-with-lease=master:base master:master</pre>
      </dd>
     </dlentry>
     <dlentry>
-     <dt
-      id="Documentation/git-push.txt-codegitpushmothershipmastersatellitemasterdevsatellitedevcode">
+     <dt>
       <codeblock>git push mothership master:satellite/master dev:satellite/dev</codeblock>
      </dt>
      <dd>
@@ -836,7 +835,7 @@ git push --force-with-lease=master:base master:master</pre>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt-codegitpushoriginHEADmastercode">
+     <dt>
       <codeblock>git push origin HEAD:master</codeblock>
      </dt>
      <dd>
@@ -846,7 +845,7 @@ git push --force-with-lease=master:base master:master</pre>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt-codegitpushoriginmasterrefsheadsexperimentalcode">
+     <dt>
       <codeblock>git push origin master:refs/heads/experimental</codeblock>
      </dt>
      <dd>
@@ -857,7 +856,7 @@ git push --force-with-lease=master:base master:master</pre>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt-codegitpushoriginexperimentalcode">
+     <dt>
       <codeblock>git push origin :experimental</codeblock>
      </dt>
      <dd>
@@ -867,7 +866,7 @@ git push --force-with-lease=master:base master:master</pre>
      </dd>
     </dlentry>
     <dlentry>
-     <dt id="Documentation/git-push.txt-codegitpushorigindevmastercode">
+     <dt>
       <codeblock>git push origin +dev:master</codeblock>
      </dt>
      <dd>
