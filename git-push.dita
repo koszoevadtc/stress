@@ -1,0 +1,918 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE concept PUBLIC "-//OASIS//DTD DITA Concept//EN" "concept.dtd">
+<concept id="concept_isy_whz_4r">
+ <title>git-push</title>
+ <shortdesc></shortdesc>
+ <conbody>
+  <section>
+   <title>NAME</title>
+   <p>git-push - Update remote refs along with associated objects</p>
+  </section>
+  <section><b>SYNOPSIS</b><pre><i>git push</i> [--all | --mirror | --tags] [--follow-tags] [--atomic] [-n | --dry-run] [--receive-pack=&lt;git-receive-pack>]
+	   [--repo=&lt;repository>] [-f | --force] [-d | --delete] [--prune] [-v | --verbose]
+	   [-u | --set-upstream] [-o &lt;string> | --push-option=&lt;string>]
+	   [--[no-]signed|--signed=(true|false|if-asked)]
+	   [--force-with-lease[=&lt;refname>[:&lt;expect>]]]
+	   [--no-verify] [&lt;repository> [&lt;refspec>…​]]</pre></section>
+  <section><b>DESCRIPTION</b><p>Updates remote refs using local refs, while sending objects
+    necessary to complete the given refs.</p><p>You can make interesting things happen to a
+    repository every time you push into it, by setting up <i>hooks</i>there. See documentation for
+     <xref href="https://git-scm.com/docs/git-receive-pack" format="html" scope="external"
+     >git-receive-pack[1]</xref>.</p><p>When the command line does not specify where to push with
+    the <codeblock>&lt;repository></codeblock> argument, <codeblock>branch.*.remote</codeblock>
+    configuration for the current branch is consulted to determine where to push. If the
+    configuration is missing, it defaults to <i>origin</i>.</p><p>When the command line does not
+    specify what to push with <codeblock>&lt;refspec>...</codeblock> arguments or
+    <codeblock>--all</codeblock>, <codeblock>--mirror</codeblock>, <codeblock>--tags</codeblock>
+    options, the command finds the default <codeblock>&lt;refspec></codeblock> by consulting
+    <codeblock>remote.*.push</codeblock> configuration, and if it is not found, honors
+    <codeblock>push.default</codeblock> configuration to decide what to push (See <xref
+     href="https://git-scm.com/docs/git-config" format="html" scope="external">git-config[1]</xref>
+    for the meaning of <codeblock>push.default</codeblock>).</p><p>When neither the command-line nor
+    the configuration specify what to push, the default behavior is used, which corresponds to the
+    <codeblock>simple</codeblock> value for <codeblock>push.default</codeblock>: the current branch
+    is pushed to the corresponding upstream branch, but as a safety measure, the push is aborted if
+    the upstream branch does not have the same name as the local one.</p></section>
+  <section><b>OPTIONS</b><dl>
+    <dlentry>
+     <dt id="Documentation/git-push.txt-ltrepositorygt">&lt;repository></dt>
+     <dd>
+      <p>The "remote" repository that is destination of a push operation. This parameter can be
+       either a URL (see the section <xref href="https://git-scm.com/docs/git-push#URLS"
+        format="html" scope="external">GIT URLS</xref> below) or the name of a remote (see the
+       section <xref href="https://git-scm.com/docs/git-push#REMOTES" format="html" scope="external"
+        >REMOTES</xref> below).</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt-ltrefspecgt82308203">&lt;refspec>…​</dt>
+     <dd>
+      <p>Specify what destination ref to update with what source object. The format of a
+       &lt;refspec> parameter is an optional plus <codeblock>+</codeblock>, followed by the source
+       object &lt;src>, followed by a colon <codeblock>:</codeblock>, followed by the destination
+       ref &lt;dst>.</p>
+      <p>The &lt;src> is often the name of the branch you would want to push, but it can be any
+       arbitrary "SHA-1 expression", such as <codeblock>master~4</codeblock> or
+       <codeblock>HEAD</codeblock> (see <xref href="https://git-scm.com/docs/gitrevisions"
+        format="html" scope="external">gitrevisions[7]</xref>).</p>
+      <p>The &lt;dst> tells which ref on the remote side is updated with this push. Arbitrary
+       expressions cannot be used here, an actual ref must be named. If
+       <codeblock>git push [&lt;repository>]</codeblock> without any
+       <codeblock>&lt;refspec></codeblock>argument is set to update some ref at the destination with
+       <codeblock>&lt;src></codeblock> with <codeblock>remote.&lt;repository>.push</codeblock>
+       configuration variable, <codeblock>:&lt;dst></codeblock> part can be omitted—​such a push
+       will update a ref that <codeblock>&lt;src></codeblock> normally updates without any
+       <codeblock>&lt;refspec></codeblock> on the command line. Otherwise, missing
+       <codeblock>:&lt;dst></codeblock> means to update the same ref as the
+       <codeblock>&lt;src></codeblock>.</p>
+      <p>If &lt;dst> doesn’t start with <codeblock>refs/</codeblock> (e.g.
+       <codeblock>refs/heads/master</codeblock>) we will try to infer where in
+       <codeblock>refs/*</codeblock> on the destination &lt;repository> it belongs based on the the
+       type of &lt;src> being pushed and whether &lt;dst> is ambiguous.</p>
+      <ul id="ul_l24_bdv_g3b">
+       <li>
+        <p>If &lt;dst> unambiguously refers to a ref on the &lt;repository> remote, then push to
+         that ref.</p>
+       </li>
+       <li>
+        <p>If &lt;src> resolves to a ref starting with refs/heads/ or refs/tags/, then prepend that
+         to &lt;dst>.</p>
+       </li>
+       <li>
+        <p>Other ambiguity resolutions might be added in the future, but for now any other cases
+         will error out with an error indicating what we tried, and depending on the
+         <codeblock>advice.pushUnqualifiedRefname</codeblock> configuration (see <xref
+          href="https://git-scm.com/docs/git-config" format="html" scope="external"
+          >git-config[1]</xref>) suggest what refs/ namespace you may have wanted to push to.</p>
+       </li>
+      </ul>
+      <p>The object referenced by &lt;src> is used to update the &lt;dst> reference on the remote
+       side. Whether this is allowed depends on where in <codeblock>refs/*</codeblock> the &lt;dst>
+       reference lives as described in detail below, in those sections "update" means any
+       modifications except deletes, which as noted after the next few sections are treated
+       differently.</p>
+      <p>The <codeblock>refs/heads/*</codeblock> namespace will only accept commit objects, and
+       updates only if they can be fast-forwarded.</p>
+      <p>The <codeblock>refs/tags/*</codeblock> namespace will accept any kind of object (as
+       commits, trees and blobs can be tagged), and any updates to them will be rejected.</p>
+      <p>It’s possible to push any type of object to any namespace outside of
+       <codeblock>refs/{tags,heads}/*</codeblock>. In the case of tags and commits, these will be
+       treated as if they were the commits inside <codeblock>refs/heads/*</codeblock> for the
+       purposes of whether the update is allowed.</p>
+      <p>I.e. a fast-forward of commits and tags outside <codeblock>refs/{tags,heads}/*</codeblock>
+       is allowed, even in cases where what’s being fast-forwarded is not a commit, but a tag object
+       which happens to point to a new commit which is a fast-forward of the commit the last tag (or
+       commit) it’s replacing. Replacing a tag with an entirely different tag is also allowed, if it
+       points to the same commit, as well as pushing a peeled tag, i.e. pushing the commit that
+       existing tag object points to, or a new tag object which an existing commit points to.</p>
+      <p>Tree and blob objects outside of <codeblock>refs/{tags,heads}/*</codeblock> will be treated
+       the same way as if they were inside <codeblock>refs/tags/*</codeblock>, any update of them
+       will be rejected.</p>
+      <p>All of the rules described above about what’s not allowed as an update can be overridden by
+       adding an the optional leading <codeblock>+</codeblock> to a refspec (or using
+       <codeblock>--force</codeblock> command line option). The only exception to this is that no
+       amount of forcing will make the <codeblock>refs/heads/*</codeblock> namespace accept a
+       non-commit object. Hooks and configuration can also override or amend these rules, see e.g.
+       <codeblock>receive.denyNonFastForwards</codeblock> in <xref
+        href="https://git-scm.com/docs/git-config" format="html" scope="external"
+        >git-config[1]</xref> and <codeblock>pre-receive</codeblock> and
+       <codeblock>update</codeblock> in<xref href="https://git-scm.com/docs/githooks" format="html"
+        scope="external">githooks[5]</xref>.</p>
+      <p>Pushing an empty &lt;src> allows you to delete the &lt;dst> ref from the remote repository.
+       Deletions are always accepted without a leading <codeblock>+</codeblock> in the refspec (or
+       <codeblock>--force</codeblock>), except when forbidden by configuration or hooks. See
+       <codeblock>receive.denyDeletes</codeblock> in <xref
+        href="https://git-scm.com/docs/git-config" format="html" scope="external"
+        >git-config[1]</xref> and <codeblock>pre-receive</codeblock> and
+       <codeblock>update</codeblock> in <xref href="https://git-scm.com/docs/githooks" format="html"
+        scope="external">githooks[5]</xref>.</p>
+      <p>The special refspec <codeblock>:</codeblock> (or <codeblock>+:</codeblock> to allow
+       non-fast-forward updates) directs Git to push "matching" branches: for every branch that
+       exists on the local side, the remote side is updated if a branch of the same name already
+       exists on the remote side.</p>
+      <p><codeblock>tag &lt;tag></codeblock> means the same as
+       <codeblock>refs/tags/&lt;tag>:refs/tags/&lt;tag></codeblock>.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---all">--all</dt>
+     <dd>
+      <p>Push all branches (i.e. refs under <codeblock>refs/heads/</codeblock>); cannot be used with
+       other &lt;refspec>.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---prune">--prune</dt>
+     <dd>
+      <p>Remove remote branches that don’t have a local counterpart. For example a remote branch
+       <codeblock>tmp</codeblock> will be removed if a local branch with the same name doesn’t exist
+       any more. This also respects refspecs,
+       e.g.<codeblock>git push --prune remote refs/heads/*:refs/tmp/*</codeblock> would make sure
+       that remote <codeblock>refs/tmp/foo</codeblock> will be removed if
+       <codeblock>refs/heads/foo</codeblock> doesn’t exist.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---mirror">--mirror</dt>
+     <dd>
+      <p>Instead of naming each ref to push, specifies that all refs under
+       <codeblock>refs/</codeblock> (which includes but is not limited to
+       <codeblock>refs/heads/</codeblock>, <codeblock>refs/remotes/</codeblock>, and
+       <codeblock>refs/tags/</codeblock>) be mirrored to the remote repository. Newly created local
+       refs will be pushed to the remote end, locally updated refs will be force updated on the
+       remote end, and deleted refs will be removed from the remote end. This is the default if the
+       configuration option <codeblock>remote.&lt;remote>.mirror</codeblock> is set.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt--n">-n</dt>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---dry-run">--dry-run</dt>
+     <dd>
+      <p>Do everything except actually send the updates.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---porcelain">--porcelain</dt>
+     <dd>
+      <p>Produce machine-readable output. The output status line for each ref will be tab-separated
+       and sent to stdout instead of stderr. The full symbolic names of the refs will be given.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt--d">-d</dt>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---delete">--delete</dt>
+     <dd>
+      <p>All listed refs are deleted from the remote repository. This is the same as prefixing all
+       refs with a colon.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---tags">--tags</dt>
+     <dd>
+      <p>All refs under <codeblock>refs/tags</codeblock> are pushed, in addition to refspecs
+       explicitly listed on the command line.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---follow-tags">--follow-tags</dt>
+     <dd>
+      <p>Push all the refs that would be pushed without this option, and also push annotated tags in
+       <codeblock>refs/tags</codeblock> that are missing from the remote but are pointing at
+       commit-ish that are reachable from the refs being pushed. This can also be specified with
+       configuration variable <codeblock>push.followTags</codeblock>. For more information, see
+       <codeblock>push.followTags</codeblock> in <xref href="https://git-scm.com/docs/git-config"
+        format="html" scope="external">git-config[1]</xref>.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---no-signed">--[no-]signed</dt>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---signedtruefalseif-asked"
+      >--signed=(true|false|if-asked)</dt>
+     <dd>
+      <p>GPG-sign the push request to update refs on the receiving side, to allow it to be checked
+       by the hooks and/or be logged. If <codeblock>false</codeblock> or
+       <codeblock>--no-signed</codeblock>, no signing will be attempted. If
+       <codeblock>true</codeblock> or <codeblock>--signed</codeblock>, the push will fail if the
+       server does not support signed pushes. If set to <codeblock>if-asked</codeblock>, sign if and
+       only if the server supports signed pushes. The push will also fail if the actual call to
+       <codeblock>gpg --sign</codeblock>fails. See <xref
+        href="https://git-scm.com/docs/git-receive-pack" format="html" scope="external"
+        >git-receive-pack[1]</xref> for the details on the receiving end.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---no-atomic">--[no-]atomic</dt>
+     <dd>
+      <p>Use an atomic transaction on the remote side if available. Either all refs are updated, or
+       on error, no refs are updated. If the server does not support atomic pushes the push will
+       fail.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt--oltoptiongt">-o &lt;option></dt>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---push-optionltoptiongt">--push-option=&lt;option></dt>
+     <dd>
+      <p>Transmit the given string to the server, which passes them to the pre-receive as well as
+       the post-receive hook. The given string must not contain a NUL or LF character. When multiple
+       <codeblock>--push-option=&lt;option></codeblock> are given, they are all sent to the other
+       side in the order listed on the command line. When no
+       <codeblock>--push-option=&lt;option></codeblock> is given from the command line, the values
+       of configuration variable <codeblock>push.pushOption</codeblock> are used instead.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---receive-packltgit-receive-packgt"
+      >--receive-pack=&lt;git-receive-pack></dt>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---execltgit-receive-packgt"
+      >--exec=&lt;git-receive-pack></dt>
+     <dd>
+      <p>Path to the <i>git-receive-pack</i> program on the remote end. Sometimes useful when
+       pushing to a remote repository over ssh, and you do not have the program in a directory on
+       the default $PATH.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---no-force-with-lease">--[no-]force-with-lease</dt>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---force-with-leaseltrefnamegt"
+      >--force-with-lease=&lt;refname></dt>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---force-with-leaseltrefnamegtltexpectgt"
+      >--force-with-lease=&lt;refname>:&lt;expect></dt>
+     <dd>
+      <p>Usually, "git push" refuses to update a remote ref that is not an ancestor of the local ref
+       used to overwrite it.</p>
+      <p>This option overrides this restriction if the current value of the remote ref is the
+       expected value. "git push" fails otherwise.</p>
+      <p>Imagine that you have to rebase what you have already published. You will have to bypass
+       the "must fast-forward" rule in order to replace the history you originally published with
+       the rebased history. If somebody else built on top of your original history while you are
+       rebasing, the tip of the branch at the remote may advance with her commit, and blindly
+       pushing with <codeblock>--force</codeblock> will lose her work.</p>
+      <p>This option allows you to say that you expect the history you are updating is what you
+       rebased and want to replace. If the remote ref still points at the commit you specified, you
+       can be sure that no other people did anything to the ref. It is like taking a "lease" on the
+       ref without explicitly locking it, and the remote ref is updated only if the "lease" is still
+       valid.</p>
+      <p><codeblock>--force-with-lease</codeblock> alone, without specifying the details, will
+       protect all remote refs that are going to be updated by requiring their current value to be
+       the same as the remote-tracking branch we have for them.</p>
+      <p><codeblock>--force-with-lease=&lt;refname></codeblock>, without specifying the expected
+       value, will protect the named ref (alone), if it is going to be updated, by requiring its
+       current value to be the same as the remote-tracking branch we have for it.</p>
+      <p><codeblock>--force-with-lease=&lt;refname>:&lt;expect></codeblock> will protect the named
+       ref (alone), if it is going to be updated, by requiring its current value to be the same as
+       the specified value <codeblock>&lt;expect></codeblock> (which is allowed to be different from
+       the remote-tracking branch we have for the refname, or we do not even have to have such a
+       remote-tracking branch when this form is used). If <codeblock>&lt;expect></codeblock> is the
+       empty string, then the named ref must not already exist.</p>
+      <p>Note that all forms other than
+       <codeblock>--force-with-lease=&lt;refname>:&lt;expect></codeblock> that specifies the
+       expected current value of the ref explicitly are still experimental and their semantics may
+       change as we gain experience with this feature.</p>
+      <p>"--no-force-with-lease" will cancel all the previous --force-with-lease on the command
+       line.</p>
+      <p>A general note on safety: supplying this option without an expected value, i.e. as
+       <codeblock>--force-with-lease</codeblock> or
+       <codeblock>--force-with-lease=&lt;refname></codeblock> interacts very badly with anything
+       that implicitly runs <codeblock>git fetch</codeblock> on the remote to be pushed to in the
+       background, e.g. <codeblock>git fetch origin</codeblock> on your repository in a cronjob.</p>
+      <p>The protection it offers over <codeblock>--force</codeblock> is ensuring that subsequent
+       changes your work wasn’t based on aren’t clobbered, but this is trivially defeated if some
+       background process is updating refs in the background. We don’t have anything except the
+       remote tracking info to go by as a heuristic for refs you’re expected to have seen &amp; are
+       willing to clobber.</p>
+      <p>If your editor or some other system is running <codeblock>git fetch</codeblock> in the
+       background for you a way to mitigate this is to simply set up another remote:</p>
+      <pre>git remote add origin-push $(git config remote.origin.url)
+git fetch origin-push</pre>
+      <p>Now when the background process runs <codeblock>git fetch origin</codeblock> the references
+       on <codeblock>origin-push</codeblock>won’t be updated, and thus commands like:</p>
+      <pre>git push --force-with-lease origin-push</pre>
+      <p>Will fail unless you manually run <codeblock>git fetch origin-push</codeblock>. This method
+       is of course entirely defeated by something that runs <codeblock>git fetch --all</codeblock>,
+       in that case you’d need to either disable it or do something more tedious like:</p>
+      <pre>git fetch              # update 'master' from remote
+git tag base master    # mark our base point
+git rebase -i master   # rewrite some commits
+git push --force-with-lease=master:base master:master</pre>
+      <p>I.e. create a <codeblock>base</codeblock> tag for versions of the upstream code that you’ve
+       seen and are willing to overwrite, then rewrite history, and finally force push changes to
+       <codeblock>master</codeblock> if the remote version is still at <codeblock>base</codeblock>,
+       regardless of what your local <codeblock>remotes/origin/master</codeblock> has been updated
+       to in the background.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt--f">-f</dt>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---force">--force</dt>
+     <dd>
+      <p>Usually, the command refuses to update a remote ref that is not an ancestor of the local
+       ref used to overwrite it. Also, when <codeblock>--force-with-lease</codeblock> option is
+       used, the command refuses to update a remote ref whose current value does not match what is
+       expected.</p>
+      <p>This flag disables these checks, and can cause the remote repository to lose commits; use
+       it with care.</p>
+      <p>Note that <codeblock>--force</codeblock> applies to all the refs that are pushed, hence
+       using it with <codeblock>push.default</codeblock> set to <codeblock>matching</codeblock> or
+       with multiple push destinations configured with <codeblock>remote.*.push</codeblock> may
+       overwrite refs other than the current branch (including local refs that are strictly behind
+       their remote counterpart). To force a push to only one branch, use a <codeblock>+</codeblock>
+       in front of the refspec to push (e.g <codeblock>git push origin +master</codeblock> to force
+       a push to the <codeblock>master</codeblock> branch). See the
+       <codeblock>&lt;refspec>...</codeblock> section above for details.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---repoltrepositorygt">--repo=&lt;repository></dt>
+     <dd>
+      <p>This option is equivalent to the &lt;repository> argument. If both are specified, the
+       command-line argument takes precedence.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt--u">-u</dt>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---set-upstream">--set-upstream</dt>
+     <dd>
+      <p>For every branch that is up to date or successfully pushed, add upstream (tracking)
+       reference, used by argument-less <xref href="https://git-scm.com/docs/git-pull" format="html"
+        scope="external">git-pull[1]</xref> and other commands. For more information, see
+       <codeblock>branch.&lt;name>.merge</codeblock>in <xref
+        href="https://git-scm.com/docs/git-config" format="html" scope="external"
+        >git-config[1]</xref>.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---no-thin">--[no-]thin</dt>
+     <dd>
+      <p>These options are passed to <xref href="https://git-scm.com/docs/git-send-pack"
+        format="html" scope="external">git-send-pack[1]</xref>. A thin transfer significantly
+       reduces the amount of sent data when the sender and receiver share many of the same objects
+       in common. The default is <codeblock>--thin</codeblock>.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt--q">-q</dt>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---quiet">--quiet</dt>
+     <dd>
+      <p>Suppress all output, including the listing of updated refs, unless an error occurs.
+       Progress is not reported to the standard error stream.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt--v">-v</dt>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---verbose">--verbose</dt>
+     <dd>
+      <p>Run verbosely.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---progress">--progress</dt>
+     <dd>
+      <p>Progress status is reported on the standard error stream by default when it is attached to
+       a terminal, unless -q is specified. This flag forces progress status even if the standard
+       error stream is not directed to a terminal.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---no-recurse-submodules">--no-recurse-submodules</dt>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---recurse-submodulescheckon-demandonlyno"
+      >--recurse-submodules=check|on-demand|only|no</dt>
+     <dd>
+      <p>May be used to make sure all submodule commits used by the revisions to be pushed are
+       available on a remote-tracking branch. If <i>check</i> is used Git will verify that all
+       submodule commits that changed in the revisions to be pushed are available on at least one
+       remote of the submodule. If any commits are missing the push will be aborted and exit with
+       non-zero status. If <i>on-demand</i> is used all submodules that changed in the revisions to
+       be pushed will be pushed. If on-demand was not able to push all necessary revisions it will
+       also be aborted and exit with non-zero status. If <i>only</i> is used all submodules will be
+       recursively pushed while the superproject is left unpushed. A value of <i>no</i> or using
+       <codeblock>--no-recurse-submodules</codeblock> can be used to override the
+       push.recurseSubmodules configuration variable when no submodule recursion is required.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---no-verify">--[no-]verify</dt>
+     <dd>
+      <p>Toggle the pre-push hook (see <xref href="https://git-scm.com/docs/githooks" format="html"
+        scope="external">githooks[5]</xref>). The default is --verify, giving the hook a chance to
+       prevent the push. With --no-verify, the hook is bypassed completely.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt--4">-4</dt>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---ipv4">--ipv4</dt>
+     <dd>
+      <p>Use IPv4 addresses only, ignoring IPv6 addresses.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt--6">-6</dt>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt---ipv6">--ipv6</dt>
+     <dd>
+      <p>Use IPv6 addresses only, ignoring IPv4 addresses.</p>
+     </dd>
+    </dlentry>
+   </dl></section>
+  <section><b>GIT URLS</b><p>In general, URLs contain information about the transport protocol, the
+    address of the remote server, and the path to the repository. Depending on the transport
+    protocol, some of this information may be absent.</p><p>Git supports ssh, git, http, and https
+    protocols (in addition, ftp, and ftps can be used for fetching, but this is inefficient and
+    deprecated; do not use it).</p><p>The native transport (i.e. git:// URL) does no authentication
+    and should be used with caution on unsecured networks.</p><p>The following syntaxes may be used
+    with them:</p><ul id="ul_p24_bdv_g3b">
+    <li>
+     <p>ssh://[user@]host.xz[:port]/path/to/repo.git/</p>
+    </li>
+    <li>
+     <p>git://host.xz[:port]/path/to/repo.git/</p>
+    </li>
+    <li>
+     <p>http[s]://host.xz[:port]/path/to/repo.git/</p>
+    </li>
+    <li>
+     <p>ftp[s]://host.xz[:port]/path/to/repo.git/</p>
+    </li>
+   </ul><p>An alternative scp-like syntax may also be used with the ssh protocol:</p><ul
+    id="ul_q24_bdv_g3b">
+    <li>
+     <p>[user@]host.xz:path/to/repo.git/</p>
+    </li>
+   </ul><p>This syntax is only recognized if there are no slashes before the first colon. This helps
+    differentiate a local path that contains a colon. For example the local path
+    <codeblock>foo:bar</codeblock> could be specified as an absolute path or
+    <codeblock>./foo:bar</codeblock> to avoid being misinterpreted as an ssh url.</p><p>The ssh and
+    git protocols additionally support ~username expansion:</p><ul id="ul_r24_bdv_g3b">
+    <li>
+     <p>ssh://[user@]host.xz[:port]/~[user]/path/to/repo.git/</p>
+    </li>
+    <li>
+     <p>git://host.xz[:port]/~[user]/path/to/repo.git/</p>
+    </li>
+    <li>
+     <p>[user@]host.xz:/~[user]/path/to/repo.git/</p>
+    </li>
+   </ul><p>For local repositories, also supported by Git natively, the following syntaxes may be
+    used:</p><ul id="ul_s24_bdv_g3b">
+    <li>
+     <p>/path/to/repo.git/</p>
+    </li>
+    <li>
+     <p>file:///path/to/repo.git/</p>
+    </li>
+   </ul><p>These two syntaxes are mostly equivalent, except when cloning, when the former implies
+    --local option. See <xref href="https://git-scm.com/docs/git-clone" format="html"
+     scope="external">git-clone[1]</xref> for details.</p><p>When Git doesn’t know how to handle a
+    certain transport protocol, it attempts to use the <i>remote-&lt;transport></i> remote helper,
+    if one exists. To explicitly request a remote helper, the following syntax may be used:</p><ul
+    id="ul_t24_bdv_g3b">
+    <li>
+     <p>&lt;transport>::&lt;address></p>
+    </li>
+   </ul><p>where &lt;address> may be a path, a server and path, or an arbitrary URL-like string
+    recognized by the specific remote helper being invoked. See <xref
+     href="https://git-scm.com/docs/gitremote-helpers" format="html" scope="external"
+     >gitremote-helpers[7]</xref> for details.</p><p>If there are a large number of similarly-named
+    remote repositories and you want to use a different format for them (such that the URLs you use
+    will be rewritten into URLs that work), you can create a configuration section of the
+    form:</p><pre>	[url "&lt;actual url base>"]
+		insteadOf = &lt;other url base></pre><p>For
+    example, with
+    this:</p><pre>	[url "git://git.host.xz/"]
+		insteadOf = host.xz:/path/to/
+		insteadOf = work:</pre><p>a
+    URL like "work:repo.git" or like "host.xz:/path/to/repo.git" will be rewritten in any context
+    that takes a URL to be "git://git.host.xz/repo.git".</p><p>If you want to rewrite URLs for push
+    only, you can create a configuration section of the
+    form:</p><pre>	[url "&lt;actual url base>"]
+		pushInsteadOf = &lt;other url base></pre><p>For
+    example, with
+    this:</p><pre>	[url "ssh://example.org/"]
+		pushInsteadOf = git://example.org/</pre><p>a URL
+    like "git://example.org/path/to/repo.git" will be rewritten to
+    "ssh://example.org/path/to/repo.git" for pushes, but pulls will still use the original
+   URL.</p></section>
+  <section><b>REMOTES</b><p>The name of one of the following can be used instead of a URL as
+    <codeblock>&lt;repository></codeblock> argument:</p><ul id="ul_u24_bdv_g3b">
+    <li>
+     <p>a remote in the Git configuration file: <codeblock>$GIT_DIR/config</codeblock>,</p>
+    </li>
+    <li>
+     <p>a file in the <codeblock>$GIT_DIR/remotes</codeblock> directory, or</p>
+    </li>
+    <li>
+     <p>a file in the <codeblock>$GIT_DIR/branches</codeblock> directory.</p>
+    </li>
+   </ul><p>All of these also allow you to omit the refspec from the command line because they each
+    contain a refspec which git will use by default.</p></section>
+  <section><b>Named remote in configuration file</b><p>You can choose to provide the name of a
+    remote which you had previously configured using <xref
+     href="https://git-scm.com/docs/git-remote" format="html" scope="external">git-remote[1]</xref>,
+     <xref href="https://git-scm.com/docs/git-config" format="html" scope="external"
+     >git-config[1]</xref> or even by a manual edit to the <codeblock>$GIT_DIR/config</codeblock>
+    file. The URL of this remote will be used to access the repository. The refspec of this remote
+    will be used by default when you do not provide a refspec on the command line. The entry in the
+    config file would appear like
+    this:</p><pre>	[remote "&lt;name>"]
+		url = &lt;url>
+		pushurl = &lt;pushurl>
+		push = &lt;refspec>
+		fetch = &lt;refspec></pre><p>The
+    <codeblock>&lt;pushurl></codeblock> is used for pushes only. It is optional and defaults to
+    <codeblock>&lt;url></codeblock>.</p></section>
+  <section><b>Named file in <codeblock>$GIT_DIR/remotes</codeblock></b><p>You can choose to provide
+    the name of a file in <codeblock>$GIT_DIR/remotes</codeblock>. The URL in this file will be used
+    to access the repository. The refspec in this file will be used as default when you do not
+    provide a refspec on the command line. This file should have the following
+    format:</p><pre>	URL: one of the above URL format
+	Push: &lt;refspec>
+	Pull: &lt;refspec></pre><p><codeblock>Push:</codeblock>
+    lines are used by <i>git push</i> and <codeblock>Pull:</codeblock> lines are used by <i>git
+     pull</i> and <i>git fetch</i>. Multiple <codeblock>Push:</codeblock>and
+    <codeblock>Pull:</codeblock> lines may be specified for additional branch
+   mappings.</p></section>
+  <section><b>Named file in <codeblock>$GIT_DIR/branches</codeblock></b><p>You can choose to provide
+    the name of a file in <codeblock>$GIT_DIR/branches</codeblock>. The URL in this file will be
+    used to access the repository. This file should have the following
+    format:</p><pre>	&lt;url>#&lt;head></pre><p><codeblock>&lt;url></codeblock> is required;
+    <codeblock>#&lt;head></codeblock> is optional.</p><p>Depending on the operation, git will use
+    one of the following refspecs, if you don’t provide one on the command line.
+    <codeblock>&lt;branch></codeblock> is the name of this file in
+    <codeblock>$GIT_DIR/branches</codeblock> and <codeblock>&lt;head></codeblock> defaults to
+    <codeblock>master</codeblock>.</p><p>git fetch
+    uses:</p><pre>	refs/heads/&lt;head>:refs/heads/&lt;branch></pre><p>git push
+   uses:</p><pre>	HEAD:refs/heads/&lt;head></pre></section>
+  <section><b>OUTPUT</b><p>The output of "git push" depends on the transport method used; this
+    section describes the output when pushing over the Git protocol (either locally or via
+    ssh).</p><p>The status of the push is output in tabular form, with each line representing the
+    status of a single ref. Each line is of the
+    form:</p><pre> &lt;flag> &lt;summary> &lt;from> -> &lt;to> (&lt;reason>)</pre><p>If --porcelain
+    is used, then each line of the output is of the
+    form:</p><pre> &lt;flag> \t &lt;from>:&lt;to> \t &lt;summary> (&lt;reason>)</pre><p>The status
+    of up-to-date refs is shown only if --porcelain or --verbose option is used.</p><dl>
+    <dlentry>
+     <dt id="Documentation/git-push.txt-flag">flag</dt>
+     <dd>
+      <p>A single character indicating the status of the ref:</p>
+      <dl>
+       <dlentry>
+        <dt id="Documentation/git-push.txt-space">(space)</dt>
+        <dd>
+         <p>for a successfully pushed fast-forward;</p>
+        </dd>
+       </dlentry>
+       <dlentry>
+        <dt id="Documentation/git-push.txt-codecode">
+         <codeblock>+</codeblock>
+        </dt>
+        <dd>
+         <p>for a successful forced update;</p>
+        </dd>
+       </dlentry>
+       <dlentry>
+        <dt id="Documentation/git-push.txt-code-code">
+         <codeblock>-</codeblock>
+        </dt>
+        <dd>
+         <p>for a successfully deleted ref;</p>
+        </dd>
+       </dlentry>
+       <dlentry>
+        <dt id="Documentation/git-push.txt-codecode">
+         <codeblock>*</codeblock>
+        </dt>
+        <dd>
+         <p>for a successfully pushed new ref;</p>
+        </dd>
+       </dlentry>
+       <dlentry>
+        <dt id="Documentation/git-push.txt-codecode">
+         <codeblock>!</codeblock>
+        </dt>
+        <dd>
+         <p>for a ref that was rejected or failed to push; and</p>
+        </dd>
+       </dlentry>
+       <dlentry>
+        <dt id="Documentation/git-push.txt-codecode">
+         <codeblock>=</codeblock>
+        </dt>
+        <dd>
+         <p>for a ref that was up to date and did not need pushing.</p>
+        </dd>
+       </dlentry>
+      </dl>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt-summary">summary</dt>
+     <dd>
+      <p>For a successfully pushed ref, the summary shows the old and new values of the ref in a
+       form suitable for using as an argument to <codeblock>git log</codeblock> (this is
+       <codeblock>&lt;old>..&lt;new></codeblock> in most cases, and
+       <codeblock>&lt;old>...&lt;new></codeblock>for forced non-fast-forward updates).</p>
+      <p>For a failed update, more details are given:</p>
+      <dl>
+       <dlentry>
+        <dt id="Documentation/git-push.txt-rejected">rejected</dt>
+        <dd>
+         <p>Git did not try to send the ref at all, typically because it is not a fast-forward and
+          you did not force the update.</p>
+        </dd>
+       </dlentry>
+       <dlentry>
+        <dt id="Documentation/git-push.txt-remoterejected">remote rejected</dt>
+        <dd>
+         <p>The remote end refused the update. Usually caused by a hook on the remote side, or
+          because the remote repository has one of the following safety options in effect:
+          <codeblock>receive.denyCurrentBranch</codeblock>(for pushes to the checked out branch),
+          <codeblock>receive.denyNonFastForwards</codeblock> (for forced non-fast-forward updates),
+          <codeblock>receive.denyDeletes</codeblock> or
+          <codeblock>receive.denyDeleteCurrent</codeblock>. See <xref
+           href="https://git-scm.com/docs/git-config" format="html" scope="external"
+           >git-config[1]</xref>.</p>
+        </dd>
+       </dlentry>
+       <dlentry>
+        <dt id="Documentation/git-push.txt-remotefailure">remote failure</dt>
+        <dd>
+         <p>The remote end did not report the successful update of the ref, perhaps because of a
+          temporary error on the remote side, a break in the network connection, or other transient
+          error.</p>
+        </dd>
+       </dlentry>
+      </dl>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt-from">from</dt>
+     <dd>
+      <p>The name of the local ref being pushed, minus its <codeblock>refs/&lt;type>/</codeblock>
+       prefix. In the case of deletion, the name of the local ref is omitted.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt-to">to</dt>
+     <dd>
+      <p>The name of the remote ref being updated, minus its <codeblock>refs/&lt;type>/</codeblock>
+       prefix.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt-reason">reason</dt>
+     <dd>
+      <p>A human-readable explanation. In the case of successfully pushed refs, no explanation is
+       needed. For a failed ref, the reason for failure is described.</p>
+     </dd>
+    </dlentry>
+   </dl></section>
+  <section><b>NOTE ABOUT FAST-FORWARDS</b><p>When an update changes a branch (or more in general, a
+    ref) that used to point at commit A to point at another commit B, it is called a fast-forward
+    update if and only if B is a descendant of A.</p><p>In a fast-forward update from A to B, the
+    set of commits that the original commit A built on top of is a subset of the commits the new
+    commit B builds on top of. Hence, it does not lose any history.</p><p>In contrast, a
+    non-fast-forward update will lose history. For example, suppose you and somebody else started at
+    the same commit X, and you built a history leading to commit B while the other person built a
+    history leading to commit A. The history looks like
+    this:</p><pre>      B
+     /
+ ---X---A</pre><p>Further suppose that the other person already
+    pushed changes leading to A back to the original repository from which you two obtained the
+    original commit X.</p><p>The push done by the other person updated the branch that used to point
+    at commit X to point at commit A. It is a fast-forward.</p><p>But if you try to push, you will
+    attempt to update the branch (that now points at A) with commit B. This does <i>not</i>
+    fast-forward. If you did so, the changes introduced by commit A will be lost, because everybody
+    will now start building on top of B.</p><p>The command by default does not allow an update that
+    is not a fast-forward to prevent such loss of history.</p><p>If you do not want to lose your
+    work (history from X to B) or the work by the other person (history from X to A), you would need
+    to first fetch the history from the repository, create a history that contains changes done by
+    both parties, and push the result back.</p><p>You can perform "git pull", resolve potential
+    conflicts, and "git push" the result. A "git pull" will create a merge commit C between commits
+    A and B.</p><pre>      B---C
+     /   /
+ ---X---A</pre><p>Updating A with the resulting merge
+    commit will fast-forward and your push will be accepted.</p><p>Alternatively, you can rebase
+    your change between X and B on top of A, with "git pull --rebase", and push the result back. The
+    rebase will create a new commit D that builds the change between X and B on top of
+    A.</p><pre>      B   D
+     /   /
+ ---X---A</pre><p>Again, updating A with this commit will
+    fast-forward and your push will be accepted.</p><p>There is another common situation where you
+    may encounter non-fast-forward rejection when you try to push, and it is possible even when you
+    are pushing into a repository nobody else pushes into. After you push commit A yourself (in the
+    first picture in this section), replace it with "git commit --amend" to produce commit B, and
+    you try to push it out, because forgot that you have pushed A out already. In such a case, and
+    only if you are certain that nobody in the meantime fetched your earlier commit A (and started
+    building on top of it), you can run "git push --force" to overwrite it. In other words, "git
+    push --force" is a method reserved for a case where you do mean to lose history.</p></section>
+  <section><b>EXAMPLES</b><dl>
+    <dlentry>
+     <dt id="Documentation/git-push.txt-codegitpushcode">
+      <codeblock>git push</codeblock>
+     </dt>
+     <dd>
+      <p>Works like <codeblock>git push &lt;remote></codeblock>, where &lt;remote> is the current
+       branch’s remote (or <codeblock>origin</codeblock>, if no remote is configured for the current
+       branch).</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt-codegitpushorigincode">
+      <codeblock>git push origin</codeblock>
+     </dt>
+     <dd>
+      <p>Without additional configuration, pushes the current branch to the configured upstream
+       (<codeblock>remote.origin.merge</codeblock> configuration variable) if it has the same name
+       as the current branch, and errors out without pushing otherwise.</p>
+      <p>The default behavior of this command when no &lt;refspec> is given can be configured by
+       setting the <codeblock>push</codeblock> option of the remote, or the
+       <codeblock>push.default</codeblock> configuration variable.</p>
+      <p>For example, to default to pushing only the current branch to <codeblock>origin</codeblock>
+       use <codeblock>git config remote.origin.push HEAD</codeblock>. Any valid &lt;refspec> (like
+       the ones in the examples below) can be configured as the default for
+       <codeblock>git push origin</codeblock>.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt-codegitpushorigincode">
+      <codeblock>git push origin :</codeblock>
+     </dt>
+     <dd>
+      <p>Push "matching" branches to <codeblock>origin</codeblock>. See &lt;refspec> in the <xref
+        href="https://git-scm.com/docs/git-push#OPTIONS" format="html" scope="external"
+        >OPTIONS</xref> section above for a description of "matching" branches.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt-codegitpushoriginmastercode">
+      <codeblock>git push origin master</codeblock>
+     </dt>
+     <dd>
+      <p>Find a ref that matches <codeblock>master</codeblock> in the source repository (most
+       likely, it would find <codeblock>refs/heads/master</codeblock>), and update the same ref
+       (e.g. <codeblock>refs/heads/master</codeblock>) in <codeblock>origin</codeblock>repository
+       with it. If <codeblock>master</codeblock> did not exist remotely, it would be created.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt-codegitpushoriginHEADcode">
+      <codeblock>git push origin HEAD</codeblock>
+     </dt>
+     <dd>
+      <p>A handy way to push the current branch to the same name on the remote.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt
+      id="Documentation/git-push.txt-codegitpushmothershipmastersatellitemasterdevsatellitedevcode">
+      <codeblock>git push mothership master:satellite/master dev:satellite/dev</codeblock>
+     </dt>
+     <dd>
+      <p>Use the source ref that matches <codeblock>master</codeblock> (e.g.
+       <codeblock>refs/heads/master</codeblock>) to update the ref that matches
+       <codeblock>satellite/master</codeblock> (most probably
+       <codeblock>refs/remotes/satellite/master</codeblock>) in the
+       <codeblock>mothership</codeblock> repository; do the same for <codeblock>dev</codeblock> and
+       <codeblock>satellite/dev</codeblock>.</p>
+      <p>See the section describing <codeblock>&lt;refspec>...</codeblock> above for a discussion of
+       the matching semantics.</p>
+      <p>This is to emulate <codeblock>git fetch</codeblock> run on the
+       <codeblock>mothership</codeblock> using <codeblock>git push</codeblock> that is run in the
+       opposite direction in order to integrate the work done on <codeblock>satellite</codeblock>,
+       and is often necessary when you can only make connection in one way (i.e. satellite can ssh
+       into mothership but mothership cannot initiate connection to satellite because the latter is
+       behind a firewall or does not run sshd).</p>
+      <p>After running this <codeblock>git push</codeblock> on the <codeblock>satellite</codeblock>
+       machine, you would ssh into the <codeblock>mothership</codeblock>and run
+       <codeblock>git merge</codeblock> there to complete the emulation of
+       <codeblock>git pull</codeblock> that were run on <codeblock>mothership</codeblock>to pull
+       changes made on <codeblock>satellite</codeblock>.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt-codegitpushoriginHEADmastercode">
+      <codeblock>git push origin HEAD:master</codeblock>
+     </dt>
+     <dd>
+      <p>Push the current branch to the remote ref matching <codeblock>master</codeblock> in the
+       <codeblock>origin</codeblock> repository. This form is convenient to push the current branch
+       without thinking about its local name.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt-codegitpushoriginmasterrefsheadsexperimentalcode">
+      <codeblock>git push origin master:refs/heads/experimental</codeblock>
+     </dt>
+     <dd>
+      <p>Create the branch <codeblock>experimental</codeblock> in the <codeblock>origin</codeblock>
+       repository by copying the current <codeblock>master</codeblock>branch. This form is only
+       needed to create a new branch or tag in the remote repository when the local name and the
+       remote name are different; otherwise, the ref name on its own will work.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt-codegitpushoriginexperimentalcode">
+      <codeblock>git push origin :experimental</codeblock>
+     </dt>
+     <dd>
+      <p>Find a ref that matches <codeblock>experimental</codeblock> in the
+       <codeblock>origin</codeblock> repository (e.g.
+       <codeblock>refs/heads/experimental</codeblock>), and delete it.</p>
+     </dd>
+    </dlentry>
+    <dlentry>
+     <dt id="Documentation/git-push.txt-codegitpushorigindevmastercode">
+      <codeblock>git push origin +dev:master</codeblock>
+     </dt>
+     <dd>
+      <p>Update the origin repository’s master branch with the dev branch, allowing non-fast-forward
+        updates.<b>This can leave unreferenced commits dangling in the origin repository.</b>
+       Consider the following situation, where a fast-forward is not possible:</p>
+      <pre>	    o---o---o---A---B  origin/master
+		     \
+		      X---Y---Z  dev</pre>
+      <p>The above command would change the origin repository to</p>
+      <pre>		      A---B  (unnamed branch)
+		     /
+	    o---o---o---X---Y---Z  master</pre>
+      <p>Commits A and B would no longer belong to a branch with a symbolic name, and so would be
+       unreachable. As such, these commits would be removed by a <codeblock>git gc</codeblock>
+       command on the origin repository.</p>
+     </dd>
+    </dlentry>
+   </dl></section>
+  <section><b>SECURITY</b><p>The fetch and push protocols are not designed to prevent one side from
+    stealing data from the other repository that was not intended to be shared. If you have private
+    data that you need to protect from a malicious peer, your best option is to store it in another
+    repository. This applies to both clients and servers. In particular, namespaces on a server are
+    not effective for read access control; you should only grant read access to a namespace to
+    clients that you would trust with read access to the entire repository.</p><p>The known attack
+    vectors are as follows:</p><ol id="ol_v24_bdv_g3b">
+    <li>
+     <p>The victim sends "have" lines advertising the IDs of objects it has that are not explicitly
+      intended to be shared but can be used to optimize the transfer if the peer also has them. The
+      attacker chooses an object ID X to steal and sends a ref to X, but isn’t required to send the
+      content of X because the victim already has it. Now the victim believes that the attacker has
+      X, and it sends the content of X back to the attacker later. (This attack is most
+      straightforward for a client to perform on a server, by creating a ref to X in the namespace
+      the client has access to and then fetching it. The most likely way for a server to perform it
+      on a client is to "merge" X into a public branch and hope that the user does additional work
+      on this branch and pushes it back to the server without noticing the merge.)</p>
+    </li>
+    <li>
+     <p>As in #1, the attacker chooses an object ID X to steal. The victim sends an object Y that
+      the attacker already has, and the attacker falsely claims to have X and not Y, so the victim
+      sends Y as a delta against X. The delta reveals regions of X that are similar to Y to the
+      attacker.</p>
+    </li>
+   </ol></section>
+  <section><b>GIT</b><p>Part of the <xref href="https://git-scm.com/docs/git" format="html"
+     scope="external">git[1]</xref> suite</p></section>
+ </conbody>
+</concept>
