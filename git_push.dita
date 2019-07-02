@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE concept PUBLIC "-//OASIS//DTD DITA Concept//EN" "concept.dtd">
+<concept id="concept_isy_whz_4r">
+ <title>git push</title>
+ <shortdesc></shortdesc>
+ <prolog>
+  <author/>
+  <metadata>
+   <prodinfo>
+    <prodname/>
+    <vrmlist>
+     <vrm version=""/>
+    </vrmlist>
+    <component/>
+    <featnum/>
+   </prodinfo>
+  </metadata>
+ </prolog>
+ <conbody>
+  <p>Updates remote refs using local refs, while sending objects necessary to complete the given
+   refs.</p>
+  <p>You can make interesting things happen to a repository every time you push into it, by setting
+   up <i>hooks</i>there. See documentation for <xref
+    href="https://git-scm.com/docs/git-receive-pack" format="html" scope="external"
+    >git-receive-pack[1]</xref>.</p>
+  <p>When the command line does not specify where to push with the
+   <codeblock>&lt;repository></codeblock> argument, <codeblock>branch.*.remote</codeblock>
+   configuration for the current branch is consulted to determine where to push. If the
+   configuration is missing, it defaults to <i>origin</i>.</p>
+  <p>When the command line does not specify what to push with <codeblock>&lt;refspec>...</codeblock>
+   arguments or <codeblock>--all</codeblock>, <codeblock>--mirror</codeblock>,
+   <codeblock>--tags</codeblock> options, the command finds the default
+   <codeblock>&lt;refspec></codeblock> by consulting <codeblock>remote.*.push</codeblock>
+   configuration, and if it is not found, honors <codeblock>push.default</codeblock> configuration
+   to decide what to push (See <xref href="https://git-scm.com/docs/git-config" format="html"
+    scope="external">git-config[1]</xref> for the meaning of
+   <codeblock>push.default</codeblock>).</p>
+  <p>When neither the command-line nor the configuration specify what to push, the default behavior
+   is used, which corresponds to the <codeblock>simple</codeblock> value for
+   <codeblock>push.default</codeblock>: the current branch is pushed to the corresponding upstream
+   branch, but as a safety measure, the push is aborted if the upstream branch does not have the
+   same name as the local one.</p>
+ </conbody>
+</concept>
