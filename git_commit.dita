@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE concept PUBLIC "-//OASIS//DTD DITA Concept//EN" "concept.dtd">
+<concept id="concept_isy_whz_4r">
+ <title>git_commit</title>
+ <shortdesc></shortdesc>
+ <prolog>
+  <author/>
+  <metadata>
+   <prodinfo>
+    <prodname/>
+    <vrmlist>
+     <vrm version=""/>
+    </vrmlist>
+    <component/>
+    <featnum/>
+   </prodinfo>
+  </metadata>
+ </prolog>
+ <conbody>
+  <section>
+   <title>NAME</title>
+   <p><cmdname>git-commit</cmdname> - Record changes to the repository</p>
+  </section>
+  <section>
+   <title>SYNOPSIS</title>
+   <codeblock><i>git commit</i> [-a | --interactive | --patch] [-s] [-v] [-u&lt;mode>] [--amend]
+	   [--dry-run] [(-c | -C | --fixup | --squash) &lt;commit>]
+	   [-F &lt;file> | -m &lt;msg>] [--reset-author] [--allow-empty]
+	   [--allow-empty-message] [--no-verify] [-e] [--author=&lt;author>]
+	   [--date=&lt;date>] [--cleanup=&lt;mode>] [--[no-]status]
+	   [-i | -o] [-S[&lt;keyid>]] [--] [&lt;file>…​]</codeblock>
+  </section>
+  <section><b>DESCRIPTION</b><p>Create a new commit containing the current contents of the index and
+    the given log message describing the changes. The new commit is a direct child of HEAD, usually
+    the tip of the current branch, and the branch is updated to point to it (unless no branch is
+    associated with the working tree, in which case HEAD is "detached" as described in <xref
+     href="https://git-scm.com/docs/git-checkout" format="html" scope="external"
+     >git-checkout[1]</xref>).</p><p>The content to be committed can be specified in several
+    ways:</p><ol id="ol_dvw_12v_g3b">
+    <li>
+     <p>by using <xref href="https://git-scm.com/docs/git-add" format="html" scope="external"
+       >git-add[1]</xref> to incrementally "add" changes to the index before using the <i>commit</i>
+      command (Note: even modified files must be "added");</p>
+    </li>
+    <li>
+     <p>by using <xref href="https://git-scm.com/docs/git-rm" format="html" scope="external"
+       >git-rm[1]</xref> to remove files from the working tree and the index, again before using the
+       <i>commit</i> command;</p>
+    </li>
+    <li>
+     <p>by listing files as arguments to the <i>commit</i> command (without --interactive or --patch
+      switch), in which case the commit will ignore changes staged in the index, and instead record
+      the current content of the listed files (which must already be known to Git);</p>
+    </li>
+    <li>
+     <p>by using the -a switch with the <i>commit</i> command to automatically "add" changes from
+      all known files (i.e. all files that are already listed in the index) and to automatically
+      "rm" files in the index that have been removed from the working tree, and then perform the
+      actual commit;</p>
+    </li>
+    <li>
+     <p>by using the --interactive or --patch switches with the <i>commit</i> command to decide one
+      by one which files or hunks should be part of the commit in addition to contents in the index,
+      before finalizing the operation. See the “Interactive Mode” section of <xref
+       href="https://git-scm.com/docs/git-add" format="html" scope="external">git-add[1]</xref> to
+      learn how to operate these modes.</p>
+    </li>
+   </ol><p>The <cmdname>--dry-run</cmdname> option can be used to obtain a summary of what is
+    included by any of the above for the next commit by giving the same set of parameters (options
+    and paths).</p><p>If you make a commit and then find a mistake immediately after that, you can
+    recover from it with <i>git reset</i>.</p></section>
+ </conbody>
+</concept>
